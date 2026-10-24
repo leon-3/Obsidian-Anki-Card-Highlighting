@@ -68,31 +68,31 @@
    2. Status Gutter Bar (ADDED: Green, DELETED: Red)
    ========================================================= */
 
-.cm-gutter.anki-status-gutter {
-	width: 4px !important;
-	min-width: 4px !important;
-	max-width: 4px !important;
-	margin-right: 6px !important;
-	background: transparent !important;
-	padding: 0 !important;
-	border: none !important;
-	box-sizing: border-box !important;
+.cm-editor .cm-gutters .cm-gutter.anki-status-gutter {
+	width: 4px;
+	min-width: 4px;
+	max-width: 4px;
+	margin-right: 6px;
+	background: transparent;
+	padding: 0;
+	border: none;
+	box-sizing: border-box;
 }
 
-.cm-gutter.anki-status-gutter .cm-gutterElement {
-	padding: 0 !important;
-	border: none !important;
-	position: relative !important;
-	width: 4px !important;
-	min-width: 4px !important;
-	max-width: 4px !important;
-	box-sizing: border-box !important;
-	/* Note: Height and margin must not be forced with !important here
+.cm-editor .cm-gutters .cm-gutter.anki-status-gutter .cm-gutterElement {
+	padding: 0;
+	border: none;
+	position: relative;
+	width: 4px;
+	min-width: 4px;
+	max-width: 4px;
+	box-sizing: border-box;
+	/* Note: Height and margin must not be forced here
 	   so CodeMirror can accurately match line heights for text and math blocks. */
 }
 
-.cm-gutter.anki-status-gutter .anki-status-gutter-empty {
-	background: transparent !important;
+.cm-editor .cm-gutters .cm-gutter.anki-status-gutter .anki-status-gutter-empty {
+	background: transparent;
 }
 
 .anki-status-gutter-bar {
@@ -135,15 +135,15 @@
    ========================================================= */
 
 /* Inactive cards: ~62% opacity when dimming is enabled */
-.cm-line.anki-status-line.anki-dimmed {
+.cm-editor .cm-content .cm-line.anki-status-line.anki-dimmed {
 	opacity: 0.62;
 	transition: opacity 0.12s ease-in-out;
 }
 
 /* Active cards (cursor inside card block or hover): 100% opacity */
-.cm-line.anki-status-line.anki-dimmed.is-active,
-.cm-line.anki-status-line.anki-dimmed.is-hovered {
-	opacity: 1 !important;
+.cm-editor .cm-content .cm-line.anki-status-line.anki-dimmed.is-active,
+.cm-editor .cm-content .cm-line.anki-status-line.anki-dimmed.is-hovered {
+	opacity: 1;
 }
 
 /* Reading View */
@@ -167,5 +167,5 @@
 }
 
 .markdown-rendered .anki-status-reading-block.anki-dimmed.is-hovered {
-	opacity: 1 !important;
+	opacity: 1;
 }

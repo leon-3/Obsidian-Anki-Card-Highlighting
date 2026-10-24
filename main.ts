@@ -1,10 +1,13 @@
 import {
 	App,
+	Component,
 	Plugin,
 	PluginSettingTab,
 	Setting,
+	SettingDefinitionItem,
 	editorLivePreviewField,
 	MarkdownPostProcessorContext,
+	MarkdownRenderChild,
 	MarkdownRenderer,
 	MarkdownView,
 	debounce,
@@ -28,6 +31,7 @@ import {
 	Text as CMText,
 } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
+import type { SyntaxNode } from "@lezer/common";
 
 const CLOZE_REGEX =
 	/\{\{([cC]?\d+)::((?:[^\n}]|\}(?!\}\}))+?)(?:::((?:[^\n}]|\}(?!\}\}))+?))?\}\}/g;
@@ -126,10 +130,10 @@ class ClozeBadgeWidget extends WidgetType {
 	}
 
 	toDOM(): HTMLElement {
-		const badge = document.createElement("span");
-		badge.className = "anki-cloze-badge";
-		badge.textContent = this.clozeId;
-		return badge;
+		return createSpan({
+			cls: "anki-cloze-badge",
+			text: this.clozeId,
+		});
 	}
 
 	ignoreEvent(): boolean {
@@ -152,12 +156,12 @@ class CardTypeBadgeWidget extends WidgetType {
 	}
 
 	toDOM(): HTMLElement {
-		const badge = document.createElement("span");
-		badge.className =
-			"anki-card-type-badge" +
-			(this.extraClass ? ` ${this.extraClass}` : "");
-		badge.textContent = this.label;
-		return badge;
+		return createSpan({
+			cls:
+				"anki-card-type-badge" +
+				(this.extraClass ? ` ${this.extraClass}` : ""),
+			text: this.label,
+		});
 	}
 
 	ignoreEvent(): boolean {
@@ -175,10 +179,10 @@ class ClozeHintWidget extends WidgetType {
 	}
 
 	toDOM(): HTMLElement {
-		const el = document.createElement("span");
-		el.className = "anki-cloze-hint";
-		el.textContent = `[${this.hint}]`;
-		return el;
+		return createSpan({
+			cls: "anki-cloze-hint",
+			text: `[${this.hint}]`,
+		});
 	}
 }
 
@@ -186,7 +190,7 @@ class EmptyGutterMarker extends GutterMarker {
 	elementClass = "anki-status-gutter-empty";
 
 	toDOM(): HTMLElement {
-		return document.createElement("div");
+		return createDiv();
 	}
 
 	eq(other: GutterMarker): boolean {
@@ -224,9 +228,7 @@ class StatusGutterMarker extends GutterMarker {
 	}
 
 	toDOM(): HTMLElement {
-		const bar = document.createElement("div");
-		bar.className = "anki-status-gutter-bar";
-		return bar;
+		return createDiv({ cls: "anki-status-gutter-bar" });
 	}
 }
 
@@ -498,7 +500,7 @@ function isIndexInInlineMath(lineText: string, index: number): boolean {
 function isPositionInLatex(state: EditorState, pos: number): boolean {
 	try {
 		const tree = syntaxTree(state);
-		let node: any = tree.resolveInner(pos, 1);
+		let node: SyntaxNode | null = tree.resolveInner(pos, 1);
 		while (node) {
 			const name = (node.name || "").toLowerCase();
 			if (
@@ -508,11 +510,7 @@ function isPositionInLatex(state: EditorState, pos: number): boolean {
 			) {
 				return true;
 			}
-			if (node.parent) {
-				node = node.parent;
-			} else {
-				break;
-			}
+			node = node.parent;
 		}
 	} catch {
 		// syntaxTree may be unavailable during early parsing
@@ -788,14 +786,14 @@ function renderCardTypeBadgesInElement(root: HTMLElement) {
 			const prefix = match[1];
 			const keyword = match[2];
 
-			if (typeof (target as any).empty === "function") { (target as any).empty(); } else { target.textContent = ""; }
+			target.empty();
 			if (prefix.trim()) {
-				target.appendChild(document.createTextNode(prefix));
+				target.appendText(prefix);
 			}
-			const badge = document.createElement("span");
-			badge.className = "anki-card-type-badge";
-			badge.textContent = keyword;
-			target.appendChild(badge);
+			target.createSpan({
+				cls: "anki-card-type-badge",
+				text: keyword,
+			});
 		}
 	}
 }
@@ -832,26 +830,46 @@ function renderEqlBadgesInElement(root: HTMLElement) {
 		const prefix = match[1];
 		const rest = val.slice(match[0].length);
 
-		const fragment = document.createDocumentFragment();
+		const fragment = createFragment();
 		if (prefix) {
-			fragment.appendChild(document.createTextNode(prefix));
+			fragment.appendText(prefix);
 		}
-		const badge = document.createElement("span");
-		badge.className = "anki-card-type-badge anki-tag-eql";
-		badge.textContent = "EQL";
-		fragment.appendChild(badge);
+		fragment.createSpan({
+			cls: "anki-card-type-badge anki-tag-eql",
+			text: "EQL",
+		});
 		if (rest) {
-			fragment.appendChild(document.createTextNode(" " + rest.trimStart()));
+			fragment.appendText(" " + rest.trimStart());
 		}
 		textNode.replaceWith(fragment);
+	}
+}
+
+class ClozeRenderChild extends MarkdownRenderChild {
+	constructor(
+		containerEl: HTMLElement,
+		private readonly appInstance: App,
+		private readonly content: string,
+		private readonly sourcePath: string
+	) {
+		super(containerEl);
+	}
+
+	onload(): void {
+		void MarkdownRenderer.render(
+			this.appInstance,
+			this.content,
+			this.containerEl,
+			this.sourcePath,
+			this
+		);
 	}
 }
 
 function renderClozesInElement(
 	root: HTMLElement,
 	app: App,
-	plugin: Plugin,
-	sourcePath: string
+	ctx: MarkdownPostProcessorContext
 ) {
 	const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
 		acceptNode(node) {
@@ -883,7 +901,7 @@ function renderClozesInElement(
 		const text = textNode.nodeValue || "";
 		CLOZE_REGEX.lastIndex = 0;
 
-		const fragment = document.createDocumentFragment();
+		const fragment = createFragment();
 		let lastIndex = 0;
 		let match: RegExpExecArray | null;
 
@@ -893,47 +911,33 @@ function renderClozesInElement(
 			}
 
 			if (match.index > lastIndex) {
-				fragment.appendChild(
-					document.createTextNode(text.slice(lastIndex, match.index))
-				);
+				fragment.appendText(text.slice(lastIndex, match.index));
 			}
 
 			const clozeId = match[1];
 			const content = match[2];
 			const hint = match[3];
 
-			const wrapper = document.createElement("span");
-			wrapper.className = "anki-cloze";
-
-			const badge = document.createElement("span");
-			badge.className = "anki-cloze-badge";
-			badge.textContent = clozeId;
-			wrapper.appendChild(badge);
-
-			const contentSpan = document.createElement("span");
-			contentSpan.className = "anki-cloze-content";
-			MarkdownRenderer.render(
+			const wrapper = fragment.createSpan({ cls: "anki-cloze" });
+			wrapper.createSpan({ cls: "anki-cloze-badge", text: clozeId });
+			const contentSpan = wrapper.createSpan({ cls: "anki-cloze-content" });
+			const child = new ClozeRenderChild(
+				contentSpan,
 				app,
 				content,
-				contentSpan,
-				sourcePath,
-				plugin
+				ctx.sourcePath
 			);
-			wrapper.appendChild(contentSpan);
+			ctx.addChild(child);
 
 			if (hint !== undefined) {
-				const hintSpan = document.createElement("span");
-				hintSpan.className = "anki-cloze-hint";
-				hintSpan.textContent = `[${hint}]`;
-				wrapper.appendChild(hintSpan);
+				wrapper.createSpan({ cls: "anki-cloze-hint", text: `[${hint}]` });
 			}
 
-			fragment.appendChild(wrapper);
 			lastIndex = match.index + match[0].length;
 		}
 
 		if (lastIndex < text.length) {
-			fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+			fragment.appendText(text.slice(lastIndex));
 		}
 
 		textNode.replaceWith(fragment);
@@ -946,6 +950,67 @@ class AnkiCardStylingSettingTab extends PluginSettingTab {
 	constructor(app: App, plugin: AnkiCardStylingPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
+	}
+
+	getSettingDefinitions(): SettingDefinitionItem<keyof AnkiCardStylingSettings>[] {
+		return [
+			{
+				name: "Cloze deletion highlighting",
+				desc: "Formats Anki cloze deletions ({{c1::...}}) as rounded badges and reveals raw syntax when the cursor is inside.",
+				control: {
+					type: "toggle",
+					key: "enableClozeHighlighting",
+				},
+			},
+			{
+				name: "Card status highlighting (ADDED / DELETED)",
+				desc: "Displays a vertical side bar (green for ADDED, red for DELETED) in the editor gutter.",
+				control: {
+					type: "toggle",
+					key: "enableStatusHighlighting",
+				},
+			},
+			{
+				name: "Dim inactive cards",
+				desc: "Subtly dims synced or deleted cards (~62% opacity) until hovered or selected.",
+				control: {
+					type: "toggle",
+					key: "enableCardDimming",
+				},
+			},
+			{
+				name: "Card type badge highlighting (Cloze / Image Cloze)",
+				desc: "Renders 'Cloze' or 'Image Cloze' on the first line after a card divider as rounded pill buttons.",
+				control: {
+					type: "toggle",
+					key: "enableCardTypeBadges",
+				},
+			},
+			{
+				name: "Extra Question Line tag highlighting (EQL)",
+				desc: "Renders 'EQL:' (Extra Question Line) at the start of a line as a styled pill tag.",
+				control: {
+					type: "toggle",
+					key: "enableEqlTagBadges",
+				},
+			},
+			{
+				name: "Status bar card counter",
+				desc: "Displays real-time card counts (total, added, deleted) in Obsidian's status bar.",
+				control: {
+					type: "toggle",
+					key: "enableStatusBar",
+				},
+			},
+		];
+	}
+
+	async setControlValue(key: string, value: unknown): Promise<void> {
+		const settingKey = key as keyof AnkiCardStylingSettings;
+		if (typeof value === "boolean") {
+			this.plugin.settings[settingKey] = value;
+			await this.plugin.saveSettings();
+		}
 	}
 
 	display(): void {
@@ -1120,8 +1185,7 @@ export default class AnkiCardStylingPlugin extends Plugin {
 					renderClozesInElement(
 						el,
 						this.app,
-						this,
-						ctx.sourcePath
+						ctx
 					);
 				}
 
@@ -1256,7 +1320,7 @@ export default class AnkiCardStylingPlugin extends Plugin {
 		this.settings = Object.assign(
 			{},
 			DEFAULT_SETTINGS,
-			await this.loadData()
+			(await this.loadData()) as Partial<AnkiCardStylingSettings> | null
 		);
 		currentSettings = this.settings;
 	}
@@ -1269,19 +1333,25 @@ export default class AnkiCardStylingPlugin extends Plugin {
 	}
 
 	private updateAllViews() {
-		this.app.workspace.iterateAllLeaves((leaf) => {
-			// @ts-ignore
-			const cm = leaf.view?.editor?.cm as EditorView | undefined;
-			if (cm) {
-				cm.dispatch({
-					effects: updateSettingsEffect.of(this.settings),
-				});
+		for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
+			const view = leaf.view;
+			if (view instanceof MarkdownView) {
+				const editorWithCm = view.editor as unknown as { cm?: EditorView };
+				if (editorWithCm.cm) {
+					editorWithCm.cm.dispatch({
+						effects: updateSettingsEffect.of(this.settings),
+					});
+				}
+				const viewWithPreview = view as unknown as {
+					previewMode?: { rerender: (full?: boolean) => void };
+				};
+				if (
+					viewWithPreview.previewMode &&
+					typeof viewWithPreview.previewMode.rerender === "function"
+				) {
+					viewWithPreview.previewMode.rerender(true);
+				}
 			}
-			// @ts-ignore
-			if (leaf.view?.previewMode) {
-				// @ts-ignore
-				leaf.view.previewMode.rerender(true);
-			}
-		});
+		}
 	}
 }
