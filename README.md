@@ -3,8 +3,7 @@
 [![Release](https://img.shields.io/badge/version-1.0.1-blue?style=flat-square)](https://github.com/leon-3/Obsidian-Anki-Card-Highlighting/releases)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://github.com/leon-3/Obsidian-Anki-Card-Highlighting/blob/main/LICENSE)
 [![Obsidian](https://img.shields.io/badge/Obsidian-1.4.0%2B-informational?style=flat-square)](https://obsidian.md)
-[![Obsidian Store](https://img.shields.io/badge/Obsidian-In--App%20Store-7c3aed?style=flat-square)](obsidian://show-plugin?id=anki-card-styling)
-[![Webpage](https://img.shields.io/badge/Obsidian-Store%20Webpage-purple?style=flat-square)](https://community.obsidian.md/plugins/anki-card-styling)
+[![Obsidian Community Plugin](https://img.shields.io/badge/Obsidian-Community%20Plugin-purple?style=flat-square)](https://community.obsidian.md/plugins/anki-card-styling)
 
 Anki Card Styling gives your Anki flashcards clean visual formatting in Obsidian. It styles clozes, card types, extra question lines, and sync status directly in Live Preview and Reading View without modifying your underlying Markdown.
 
@@ -27,7 +26,7 @@ It is built for the flashcard syntax used by [Anki-VaultSync](https://github.com
 
 ### Method 1: Obsidian Community Plugins
 1. Open **Settings** > **Community plugins** in Obsidian.
-2. Search for **Anki Card Styling** (or open [`obsidian://show-plugin?id=anki-card-styling`](obsidian://show-plugin?id=anki-card-styling)).
+2. Search for **Anki Card Styling**.
 3. Click **Install**, then **Enable**.
 
 ### Method 2: Manual Installation
