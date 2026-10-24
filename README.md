@@ -1,120 +1,104 @@
 # Anki Card Styling
 
-[![GitHub Release](https://img.shields.io/github/v/release/leon-3/Obsidian-Anki-Card-Highlighting?style=flat-square&color=7c3aed)](https://github.com/leon-3/Obsidian-Anki-Card-Highlighting/releases)
-[![Obsidian Min Version](https://img.shields.io/badge/Obsidian-1.4.0%2B-5b21b6?style=flat-square)](https://obsidian.md)
+[![Release](https://img.shields.io/badge/version-1.0.1-blue?style=flat-square)](https://github.com/leon-3/Obsidian-Anki-Card-Highlighting/releases)
+[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://github.com/leon-3/Obsidian-Anki-Card-Highlighting/blob/main/LICENSE)
+[![Obsidian](https://img.shields.io/badge/Obsidian-1.4.0%2B-informational?style=flat-square)](https://obsidian.md)
+[![Obsidian Store](https://img.shields.io/badge/Obsidian-In--App%20Store-7c3aed?style=flat-square)](obsidian://show-plugin?id=anki-card-styling)
+[![Webpage](https://img.shields.io/badge/Obsidian-Store%20Webpage-purple?style=flat-square)](https://community.obsidian.md/plugins/anki-card-styling)
 
-Anki Card Styling provides clean, native visual formatting for Anki flashcards directly in Obsidian. It automatically styles clozes, card type indicators, question line tags, and card synchronization states in both Live Preview and Reading View without breaking raw Markdown compatibility.
+Anki Card Styling gives your Anki flashcards clean visual formatting in Obsidian. It styles clozes, card types, extra question lines, and sync status directly in Live Preview and Reading View without modifying your underlying Markdown.
 
----
-
-## Visual Overview
-
-| Markdown Source | Rendered in Live Preview & Reading View |
-| :--- | :--- |
-| `{{c1::Hypertrophy}}` | <kbd>c1</kbd> <u>Hypertrophy</u> |
-| `{{c2::Mitochondria::Powerhouse}}` | <kbd>c2</kbd> <u>Mitochondria</u> *(Powerhouse)* |
-| `Cloze` *(after `---`)* | <kbd>Cloze</kbd> button badge |
-| `Image Cloze` *(after `---`)* | <kbd>Image Cloze</kbd> button badge |
-| `EQL: P(A\|B) = ...` | <kbd>EQL</kbd> `P(A\|B) = ...` tag badge |
-| `ADDED: Card content...` | Green status gutter bar alongside the card |
-| `DELETED: Obsolete card...` | Red status gutter bar alongside the card |
+It is built for the flashcard syntax used by [Anki-VaultSync](https://github.com/leon-3/Anki-VaultSync) and [Markdown2Anki](https://github.com/leon-3/Markdown2Anki):
+- [Anki Cloze Deletion](https://github.com/leon-3/Obsidian-Anki-Cloze): Companion plugin with hotkeys (`Ctrl+Shift+C` / `Ctrl+Alt+C`) to create card-scoped clozes quickly.
+- [Anki-VaultSync](https://github.com/leon-3/Anki-VaultSync): Desktop add-on for direct sync between your vault and Anki without extra servers.
+- [Markdown2Anki](https://github.com/leon-3/Markdown2Anki): Standalone command-line tool and compiler.
 
 ---
 
-## Features
+## Highlights & Key Features
 
-- **Interactive Cloze Deletions**
-  - Renders raw `{{c1::answer}}` and `{{c1::answer::hint}}` as styled pill badges with colored underlines.
-  - **Click-to-Edit**: Moving the cursor inside a cloze reveals the raw syntax for instant editing.
-  - Supports custom identifiers (such as `{{c1::...}}` or `{{01::...}}`).
-  - Safely ignores cloze syntax inside inline and block LaTeX math (`$...$` and `$$...$$`).
-
-- **Card Type & Header Badges**
-  - Automatically formats `Cloze` and `Image Cloze` on card header lines into rounded button badges.
-  - Formats `EQL:` (Extra Question Line) prefixes into distinct pill tags.
-  - Automatically collapses back to editable text when focused.
-
-- **Real-Time Status Gutter Bars (ADDED / DELETED)**
-  - Displays a continuous vertical status bar in the editor gutter:
-    - **Green** for cards prefixed with `ADDED:` (active or synced cards).
-    - **Red** for cards prefixed with `DELETED:` (or `DELTED:`) (flagged for removal).
-  - Aligns with multi-line math blocks, wrapped text, and custom widgets without scrolling drift.
-
-- **Smart Focus Dimming**
-  - Inactive cards can be subtly dimmed (~62% opacity) to eliminate visual noise and keep focus on the card currently being edited.
-  - Restores to 100% opacity whenever hovering with the mouse or placing the cursor inside the card block.
-  - Can be toggled on or off in settings.
-
-- **Status Bar Card Counter**
-  - Displays live card counts in Obsidian's status bar (e.g. `Anki: 5 cards (4 added, 1 deleted)`).
-  - Can be toggled on or off in settings.
-
-- **Universal Markdown Support**
-  - Works seamlessly across both Live Preview and Reading View.
-  - Respects standard Markdown thematic breaks (`---`, `___`, `***`).
-  - Automatically ignores YAML frontmatter and fenced code blocks.
+- Visual clozes with click-to-edit: Renders `{{c1::answer}}` as styled badges and underlines. Clicking or moving your cursor inside immediately expands the raw text for editing.
+- Card badges & question lines: Formats `Cloze` and `Image Cloze` headers into neat button badges, and highlights `EQL:` (Extra Question Line) prefixes as tag pills.
+- Gutter status bars & card dimming: Shows green gutter bars for active cards (`ADDED:`) and red for deleted ones (`DELETED:`), with optional dimming for cards you are not currently editing.
 
 ---
 
-## Syntax & Card Structure
+## Installation & Quickstart
 
-Cards are separated by standard Markdown horizontal rules (`---`). Status tags and card types are placed right after the divider:
+### Method 1: Obsidian Community Plugins
+1. Open **Settings** > **Community plugins** in Obsidian.
+2. Search for **Anki Card Styling** (or open [`obsidian://show-plugin?id=anki-card-styling`](obsidian://show-plugin?id=anki-card-styling)).
+3. Click **Install**, then **Enable**.
+
+### Method 2: Manual Installation
+1. Download `main.js`, `manifest.json`, and `styles.css` from the latest [GitHub Release](https://github.com/leon-3/Obsidian-Anki-Card-Highlighting/releases).
+2. Create `<Vault>/.obsidian/plugins/anki-card-styling/` in your vault.
+3. Place the downloaded files inside.
+4. Reload Obsidian plugins and turn on **Anki Card Styling**.
+
+---
+
+## Documentation
+
+### Card Syntax within the Ecosystem
+This plugin styles the card format used by [Anki-VaultSync](https://github.com/leon-3/Anki-VaultSync) and [Markdown2Anki](https://github.com/leon-3/Markdown2Anki). For sync details, deck routing, and configuration options, see the documentation in those repositories.
+
+Cards are enclosed between `---` lines:
 
 ```markdown
 ---
-Cloze
-ADDED: What is the main driver of muscle protein synthesis?
-EQL: Resistance training and adequate protein intake.
-The primary mechanism is {{c1::mechanical tension}} signaling through {{c2::mTORC1::signaling pathway}}.
+ADDED: Cloze %%d4f8k2%%
+Cellular respiration occurs in {{c1::mitochondria}}. The process generates {{c2::ATP}}.
+
 ---
-DELETED: Old obsolete definition %%card-id-1234%%
-This card has been flagged for deletion during the next sync.
+Where does cellular respiration occur?
+EQL: What energy currency is produced?
+Cellular respiration occurs in mitochondria. The process generates ATP.
+
 ---
-Image Cloze
-ADDED: Identify the indicated structure:
-![[Brain-Anatomy.png]]
+ADDED: Image Cloze %%o4fj5k3%%
+![[Cell-Anatomy.png]]
+
 ---
-Standard note content continues here outside card blocks...
+DELETED: Old card to be removed %%b9x1n3%%
+With old answer text
+
+---
 ```
 
----
+### Visual Formatting Reference
 
-## Settings
+| Markdown Syntax | Rendered Visual Appearance |
+| :--- | :--- |
+| `{{c1::Hypertrophy}}` | Colored badge `<c1>` with underlined text `Hypertrophy` |
+| `{{c2::Mitochondria}}` | Colored badge `<c2>` with underlined text `Mitochondria` |
+| `Cloze` *(on line after `---`)* | Rounded button badge indicating a cloze card |
+| `Image Cloze` *(on line after `---`)* | Rounded button badge indicating an image occlusion card |
+| `EQL: Context prompt...` | Distinctive pill badge `EQL` followed by the context string |
+| `ADDED: Card content...` | Green vertical status bar in the editor gutter |
+| `DELETED: Obsolete content...` | Red vertical status bar in the editor gutter |
 
-Settings can be customized under **Settings > Community plugins > Anki Card Styling**:
+### Settings Reference
+Options can be configured under **Settings** > **Community plugins** > **Anki Card Styling**:
 
 | Setting | Default | Description |
 | :--- | :---: | :--- |
-| **Cloze deletion highlighting** | On | Formats `{{c1::...}}` as pill badges and underlines; reveals raw syntax on cursor focus. |
-| **Card status highlighting** | On | Displays vertical side gutter bars (green for ADDED, red for DELETED). |
-| **Dim inactive cards** | On | Subtly dims inactive cards until hovered or selected. |
-| **Card type badge highlighting** | On | Renders `Cloze` and `Image Cloze` on header lines as rounded badges. |
-| **Extra Question Line tag highlighting** | On | Renders `EQL:` prefixes as styled pill tags. |
-| **Status bar card counter** | On | Displays real-time card counts in Obsidian's bottom status bar. |
+| Cloze deletion highlighting | On | Formats `{{c1::...}}` as badges and underlines; reveals raw text on cursor focus. |
+| Card status highlighting | On | Displays vertical side gutter bars (green for ADDED, red for DELETED). |
+| Dim inactive cards | On | Subtly dims cards until hovered or selected. |
+| Card type badge highlighting | On | Renders `Cloze` and `Image Cloze` on header lines as rounded badges. |
+| Extra Question Line tag highlighting | On | Renders `EQL:` prefixes as styled pill tags. |
+| Status bar card counter | On | Displays real-time card counts in Obsidian's status bar. |
 
 ---
 
-## Installation
+## Development & Building
 
-### From Obsidian Community Plugins (Recommended)
-
-1. Open **Settings > Community plugins** in Obsidian.
-2. Turn off **Restricted mode** if enabled.
-3. Click **Browse** and search for **Anki Card Styling**.
-4. Click **Install**, then **Enable**.
-
-### Manual Installation
-
-1. Download `main.js`, `manifest.json`, and `styles.css` from the latest [GitHub Release](https://github.com/leon-3/Obsidian-Anki-Card-Highlighting/releases).
-2. Create a folder named `anki-card-styling` in your vault's plugin directory:
-   ```
-   <Vault>/.obsidian/plugins/anki-card-styling/
-   ```
-3. Copy `main.js`, `manifest.json`, and `styles.css` into that folder.
-4. Reload Obsidian (`Ctrl+R` / `Cmd+R`) and enable **Anki Card Styling** in **Settings > Community plugins**.
+### Requirements
+- Node.js 18+
+- npm
 
 ### Building from Source
-
 ```bash
 git clone https://github.com/leon-3/Obsidian-Anki-Card-Highlighting.git
 cd Obsidian-Anki-Card-Highlighting
