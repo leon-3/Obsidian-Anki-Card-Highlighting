@@ -1,0 +1,10 @@
+{
+	"id": "anki-card-styling",
+	"name": "Anki Card Styling",
+	"version": "1.0.0",
+	"minAppVersion": "1.4.0",
+	"description": "Renders embedded Anki clozes, card type buttons (Cloze, Image Cloze), Extra Question Line tags (EQL), and synchronized card status in Live Preview and Reading View.",
+	"author": "Leon Froschauer",
+	"authorUrl": "https://github.com/leon-3",
+	"isDesktopOnly": false
+}

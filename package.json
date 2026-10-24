@@ -1,0 +1,22 @@
+{
+	"name": "anki-card-styling",
+	"version": "1.0.0",
+	"description": "Renders embedded Anki clozes, card type buttons (Cloze, Image Cloze), Extra Question Line tags (EQL), and synchronized card status in Live Preview and Reading View.",
+	"main": "main.js",
+	"author": "Leon Froschauer",
+	"license": "MIT",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production"
+	},
+	"devDependencies": {
+		"@codemirror/language": "^6.13.1",
+		"@codemirror/state": "^6.4.0",
+		"@codemirror/view": "^6.26.0",
+		"@types/node": "^16.11.6",
+		"esbuild": "0.17.3",
+		"obsidian": "latest",
+		"tslib": "2.4.0",
+		"typescript": "4.7.4"
+	}
+}
